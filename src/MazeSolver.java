@@ -5,6 +5,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class MazeSolver {
     private Maze maze;
@@ -27,19 +28,56 @@ public class MazeSolver {
      * @return An arraylist of MazeCells to visit in order
      */
     public ArrayList<MazeCell> getSolution() {
-        // TODO: Get the solution from the maze
+        Stack<MazeCell> stack = new Stack<>();
+        ArrayList<MazeCell> route = new ArrayList<>();
+        MazeCell cell = maze.getEndCell();
+        stack.push(cell);
+        while (!cell.equals(maze.getStartCell())) {
+            stack.push(cell.getParent());
+            cell = cell.getParent();
+        }
+        while (!stack.empty()) {
+            route.add(stack.pop());
+        }
         // Should be from start to end cells
-        return null;
+        return route;
     }
+
 
     /**
      * Performs a Depth-First Search to solve the Maze
      * @return An ArrayList of MazeCells in order from the start to end cell
      */
     public ArrayList<MazeCell> solveMazeDFS() {
-        // TODO: Use DFS to solve the maze
+        Stack<MazeCell> cellsToVisit = new Stack<>();
+        MazeCell current = maze.getStartCell();
+        while (!current.equals(maze.getEndCell())) {
+            if (!cellsToVisit.empty()) {
+                current = cellsToVisit.pop();
+            }
+
+            int row = current.getRow();
+            int col = current.getCol();
+            if (maze.isValidCell(row,col - 1)) {
+                cellsToVisit.push(maze.getCell(row,col - 1));
+            }
+            if (maze.isValidCell(row + 1, col)) {
+                cellsToVisit.push(maze.getCell(row + 1, col));
+            }
+            if (maze.isValidCell(row,col + 1)) {
+                cellsToVisit.push(maze.getCell(row,col + 1));
+            }
+            if (maze.isValidCell(row - 1, col)) {
+                cellsToVisit.push(maze.getCell(row - 1, col));
+            }
+            cellsToVisit.peek().setParent(current);
+            current.setExplored(true);
+
+        }
+        maze.getEndCell().setParent(current);
+
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
-        return null;
+        return getSolution();
     }
 
     /**
